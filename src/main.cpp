@@ -15,8 +15,8 @@ int main(int argc, char *argv[])
 
   QQmlApplicationEngine engine;
 
-  QQmlContext ctxt (&engine);
-  ctxt.setContextProperty("dbif",&dbface);
+//  QQmlContext ctxt (&engine);
+  qmlRegisterType<DBInterface>("com.berndhs",1,0,"DBIf");
   engine.load(QUrl(QLatin1String("qrc:/qml/main.qml")));
 
   return app.exec();

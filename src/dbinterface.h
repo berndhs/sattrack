@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QDateTime>
 #include <QString>
+#include <QSqlDatabase>
+#include <QDateTime>
 
 namespace deliberate {
 
@@ -14,9 +16,17 @@ class DBInterface : public QObject
 public:
   explicit DBInterface(QObject *parent = 0);
 
-  Q_PROPERTY(QString date READ date NOTIFY dateChanged)
+  Q_PROPERTY(QDateTime date READ date NOTIFY dateChanged)
+  Q_INVOKABLE bool doConnect ();
+  Q_INVOKABLE void getImages();
+  Q_PROPERTY(int numImages READ numImages NOTIFY numImagesChanged)
 
-QString date();
+QDateTime date();
+
+int numImages() const
+{
+  return m_numImages;
+}
 
 public slots:
 
@@ -25,11 +35,15 @@ public slots:
 
 signals:
 
-void dateChanged(QString date);
+void dateChanged(QDateTime date);
+
+void numImagesChanged(int numImages);
 
 private:
 
-  QString m_date;
+  int       m_numImages;
+  QDateTime m_date;
+  QSqlDatabase m_db;
 };
 
 } // namespace

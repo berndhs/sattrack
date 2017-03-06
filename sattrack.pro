@@ -1,8 +1,8 @@
-QT += qml quick
+QT += qml
+QT += quick
+QT += sql
 
 CONFIG += c++11
-
-QMAKE_CXX = clang
 
 OBJECTS_DIR = tmp/obj
 MOC_DIR = tmp/moc
