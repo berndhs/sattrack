@@ -25,6 +25,11 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+
+
+#include <QQmlImageProviderBase>
+#include <QQuickImageProvider>
+
 #include "dbinterface.h"
 #include "picbuttonlist.h"
 #include "imagesource.h"
@@ -43,7 +48,7 @@ int main(int argc, char *argv[])
   QQmlApplicationEngine engine;
   ImageSource imgSrc;
 
-  engine.addImageProvider("images",QQmlImageProviderBase(&imgSrc));
+  engine.addImageProvider("satpics",&imgSrc);
   qmlRegisterType<DBInterface>("com.berndhs",1,0,"DBIf");
   engine.load(QUrl(QLatin1String("qrc:/qml/main.qml")));
 

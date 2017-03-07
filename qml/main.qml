@@ -38,8 +38,35 @@ ApplicationWindow {
         id: bigRect;
         anchors.fill: parent;
         color: "lightyellow";
+        Text {
+            id: imgLabel;
+            width: theImage.width;
+            height: 19;
+            anchors.left: bigRect.left;
+            anchors.top: bigRect.top;
+            z: bigRect.z+2;
+            font.pixelSize: 15;
+            text: "?";
+        }
+
+        Image {
+            id: theImage;
+            visible: false;
+            anchors {
+                left: bigRect.left;
+                verticalCenter: bigRect.verticalCenter;
+            }
+            width: 200;
+            height: 300;
+            z: bigRect.z+1;
+            property string filename: "noimg.jpg";
+            property string ident: "0";
+            source: "image://satpics/"+ident+"/"+filename;
+        }
+
         ListView {
             id: theList;
+            visible: true;
             height: bigRect.height;
             width: bigRect.width/2;
             z: bigRect.z+1;
@@ -60,6 +87,11 @@ ApplicationWindow {
                 onReleased: {
                     console.log("they want " ,identText.text);
                     dbif.doRaise(index,ident,picname);
+                    theList.visible = false;
+                    theImage.visible = true;
+                    theImage.filename = picname;
+                    theImage.ident = ident;
+                    imgLabel.text = ident + "==" + picname;
                 }
             }
         }

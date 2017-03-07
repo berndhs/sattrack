@@ -53,7 +53,6 @@ PicButtonList::data(const QModelIndex &index, int role) const
   QVariant result;
   int row = index.row();
   int max = m_dataMap.size();
-  qDebug() << Q_FUNC_INFO;
   if (row >= 0 || row < max) {
     QString key = m_dataKey[row];
     if (role > int(PicRole::R_TooSmall) || role < int(PicRole::R_TooBig)) {
@@ -63,7 +62,7 @@ PicButtonList::data(const QModelIndex &index, int role) const
         qDebug() << "Fatal: image memory map corrupt" ;
         abort();
       }
-      qDebug() << Q_FUNC_INFO << row << role;
+//      qDebug() << Q_FUNC_INFO << row << role << m_roles[role];
       switch (pRole) {
         case PicRole::R_Ident:
           result.setValue(im->ident);
@@ -85,6 +84,7 @@ PicButtonList::data(const QModelIndex &index, int role) const
       }
     }
   }
+//  qDebug() << Q_FUNC_INFO << "returns " << result;
   return result;
 }
 
@@ -139,9 +139,9 @@ PicButtonList::addItem(const QString &ident,
                        const QString &remark,
                        const QString &stamp,
                        const QByteArray &image)
-{
+{/*
   qDebug() << Q_FUNC_INFO << ident << picname
-           << remark << stamp << image.size();
+           << remark << stamp << image.size();*/
   beginResetModel();
   Image *im (new Image (ident,picname,remark,stamp));
   im->setImage(image);

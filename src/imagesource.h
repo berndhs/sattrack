@@ -4,15 +4,24 @@
 #include <QQmlImageProviderBase>
 #include <QQuickImageProvider>
 
-
+namespace deliberate {
 class ImageSource : public QQuickImageProvider
 {
 
 public:
-  ImageSource();
+  ImageSource(QQmlImageProviderBase::ImageType tipo = QQmlImageProviderBase::Image,
+              QQmlImageProviderBase::Flags flags = 0);
 
-  ImageType imageType() const;
-  Flags     flags() const;
+  QImage requestImage(const QString & id,
+                              QSize * size,
+                              const QSize & requestedSize);
+  QPixmap requestPixmap(const QString & id,
+                               QSize * size,
+                               const QSize & requestedSize);
+  QQuickTextureFactory * requestTexture(const QString & id,
+                                               QSize * size,
+                                               const QSize & requestedSize);
 };
+} // namespace
 
 #endif // IMAGESOURCE_H
