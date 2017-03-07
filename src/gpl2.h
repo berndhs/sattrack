@@ -17,35 +17,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, 
  *  Boston, MA  02110-1301, USA.
  ****************************************************************/
 
-
-#include <QGuiApplication>
-#include <QQmlApplicationEngine>
-#include <QQmlContext>
-#include "dbinterface.h"
-#include "picbuttonlist.h"
-#include "imagesource.h"
-
-using namespace deliberate;
-
-int main(int argc, char *argv[])
-{
-  QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-  QGuiApplication app(argc, argv);
-
-  DBInterface dbface;
-  dbface.setApp(app);
-
-
-  QQmlApplicationEngine engine;
-  ImageSource imgSrc;
-
-  engine.addImageProvider("images",QQmlImageProviderBase(&imgSrc));
-  qmlRegisterType<DBInterface>("com.berndhs",1,0,"DBIf");
-  engine.load(QUrl(QLatin1String("qrc:/qml/main.qml")));
-
-  return app.exec();
-}
