@@ -34,8 +34,12 @@
 #include <QMap>
 #include <QHash>
 #include <QDebug>
+#include <QTimer>
 
 namespace deliberate {
+
+
+class DBInterface;
 
 
 class PicButtonList : public QAbstractItemModel
@@ -45,15 +49,21 @@ class PicButtonList : public QAbstractItemModel
 public:
   PicButtonList(QObject *parent = Q_NULLPTR);
 
+  Q_PROPERTY(bool dbConnected READ dbConnected WRITE setDbConnected NOTIFY dbConnectedChanged)
+
+  void setDB (DBInterface * db) { m_dbif = db; }
+  DBInterface * db () { return m_dbif; }
+
   int columnCount(const QModelIndex & parent=QModelIndex()) const;
   int rowCount(const QModelIndex & parent=QModelIndex()) const;
   QVariant data (const QModelIndex & index, int role = Qt::DisplayRole) const;
   QModelIndex index (int row, int column, const QModelIndex & parent=QModelIndex()) const;
   Q_INVOKABLE QString buttonLabel (int row) const;
-  Q_INVOKABLE QByteArray buttonImage (int row) const;
+  Q_INVOKABLE QByteArray buttonImage (const QString &ident, const QString &picname) const;
   Q_INVOKABLE void clear();
   QModelIndex parent (const QModelIndex &child) const;
   QHash<int, QByteArray> roleNames() const;
+  int size() { return m_dataMap.size(); }
 
   bool addItem (const QString &ident, const QString &picname,
                 const QString &remark, const QString &stamp,
@@ -69,7 +79,30 @@ public:
     R_TooBig
   };
 
+  bool dbConnected() const
+  {
+    return m_dbConnected;
+  }
+
+public slots:
+
+  void dumpKeys();
+
+  void setDbConnected(bool dbConnected)
+  {
+    if (m_dbConnected == dbConnected)
+      return;
+
+    m_dbConnected = dbConnected;
+    emit dbConnectedChanged(dbConnected);
+  }
+
+signals:
+  void dbConnectedChanged(bool dbConnected);
+
 private:
+
+  QString composeKey (const QString & id, const QString & file) const;
 
   struct Image {
     Image (const QString &id,
@@ -95,6 +128,10 @@ private:
   QList<QString>         m_dataKey;
   QMap<QString, Image*>  m_dataMap;
 
+  QTimer * checkTimer ;
+
+  bool m_dbConnected;
+  DBInterface * m_dbif;
 };
 
 } // namespace

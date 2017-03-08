@@ -34,6 +34,18 @@ PicButtonList::PicButtonList (QObject *parent)
   m_roles[int(PicRole::R_Stamp)] = "stamp";
   m_roles[int(PicRole::R_Image)] = "image";
   m_roles[int(PicRole::R_Picname)] = "picname";
+  checkTimer = new QTimer(this);
+  checkTimer->setInterval(3000);
+  connect(checkTimer,SIGNAL(timeout()),this,SLOT(dumpKeys()));
+  checkTimer->start(3000);
+
+}
+
+void
+PicButtonList::dumpKeys()
+{
+  return;
+  qDebug() << Q_FUNC_INFO << "I am " << this << "\n\t\tkeys " << m_dataKey;
 }
 
 int
@@ -101,14 +113,24 @@ PicButtonList::buttonLabel(int row) const
 }
 
 QByteArray
-PicButtonList::buttonImage(int row) const
+PicButtonList::buttonImage(const QString &ident, const QString &picname) const
 {
-  return QByteArray("===============");
+  qDebug() << Q_FUNC_INFO << ident<< picname << "this " << this;
+  QString key = composeKey(ident,picname);
+  if (m_dataMap.contains(key)) {
+    qDebug() << Q_FUNC_INFO << "yes we have " << key;
+    return m_dataMap[key]->image;
+  } else {
+    qDebug() << Q_FUNC_INFO << "NO KEY " << key;
+    qDebug() << "\t\t" << "keys are " << m_dataKey;
+    return QByteArray();
+  }
 }
 
 void
 PicButtonList::clear()
 {
+  qDebug() << Q_FUNC_INFO;
   beginResetModel();
   m_dataKey.clear();
   for (auto d=m_dataMap.begin(); d !=m_dataMap.end(); ++d) {
@@ -117,7 +139,6 @@ PicButtonList::clear()
     m_dataMap.erase(d);
   }
   m_dataMap.clear();
-  m_dataKey.clear();
   endResetModel();
 }
 
@@ -145,13 +166,19 @@ PicButtonList::addItem(const QString &ident,
   beginResetModel();
   Image *im (new Image (ident,picname,remark,stamp));
   im->setImage(image);
-  QFileInfo nameInfo (picname);
-  QString base = nameInfo.fileName();
-  QString key = ident + base;
+  QString key =  composeKey(ident,picname);
   m_dataKey.append(key);
   m_dataMap[key] = im;
   endResetModel();
-  return false;
+  return true;
+}
+
+QString
+PicButtonList::composeKey(const QString &id, const QString &file) const
+{
+  QFileInfo nameInfo (file);
+  QString base = nameInfo.fileName();
+  return id + "<=>" + base;
 }
 
 } // namespace

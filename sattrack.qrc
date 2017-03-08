@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="pics/">
+        <file alias="nopic.jpg">pics/nosatpic.jpg</file>
+    </qresource>
+    <qresource prefix="/">
+        <file>qml/main.qml</file>
+        <file>qml/Page1.qml</file>
+    </qresource>
+</RCC>

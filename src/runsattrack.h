@@ -1,3 +1,5 @@
+#ifndef RUNSATTRACK_H
+#define RUNSATTRACK_H
 
 
 /****************************************************************
@@ -20,27 +22,38 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor,
  *  Boston, MA  02110-1301, USA.
  ****************************************************************/
-
-
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QQmlEngine>
+
+#include "dbinterface.h"
+#include "picbuttonlist.h"
+#include "imagesource.h"
 #include <QObject>
 
+namespace deliberate {
 
-#include <QQmlImageProviderBase>
-#include <QQuickImageProvider>
-
-#include "runsattrack.h"
-
-using namespace deliberate;
-
-int main(int argc, char *argv[])
+class RunSattrack : public QObject
 {
-  QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-  QGuiApplication app(argc, argv);
-  RunSattrack rst;
-  rst.run(app);
+  Q_OBJECT
+public:
+  explicit RunSattrack(QObject *parent = 0);
+  void run(QGuiApplication &app);
 
-  return app.exec();
-}
+public slots:
+
+  void runMore (QObject* obj, QUrl url);
+
+private:
+
+
+  QQmlApplicationEngine engine;
+  ImageSource           imgSrc;
+  QGuiApplication      *m_app;
+
+};
+
+} // namespace
+
+#endif // RUNSATTRACK_H

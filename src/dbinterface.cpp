@@ -31,21 +31,29 @@ namespace deliberate {
 DBInterface::DBInterface(QObject *parent)
   : QObject(parent),
   m_date(QDateTime::currentDateTime()),
+  m_haveDB(false),
   m_app(0)
 {
+  qDebug() << Q_FUNC_INFO << "\n\n\n";
+  static int dbcount(0);
+  ++dbcount;
   m_thePics = new PicButtonList(this);
-  qDebug() << Q_FUNC_INFO ;
+  m_thePics->setDB(this);
+  qDebug() << Q_FUNC_INFO << dbcount << m_thePics;
 
 }
 
 bool DBInterface::doConnect()
 {
+  qDebug() << Q_FUNC_INFO;
   m_db = QSqlDatabase::addDatabase("QMYSQL");
   m_db.setHostName("localhost");
   m_db.setDatabaseName("satview");
   m_db.setUserName("bernd");
   m_db.setPassword("geronimo");
   bool worked = m_db.open();
+  m_haveDB = worked;
+  m_thePics->setDbConnected(m_haveDB);
   qDebug() << Q_FUNC_INFO << worked;
   return worked;
 }
@@ -90,8 +98,8 @@ void DBInterface::doQuit()
   qDebug() << Q_FUNC_INFO ;
 
   doDisConnect();
-  m_thePics->clear();
-  m_app->quit();
+//  m_thePics->clear();
+//  m_app->quit();
 
 }
 

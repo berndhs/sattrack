@@ -20,6 +20,7 @@
 # *  Boston, MA  02110-1301, USA.
 # ****************************************************************/
 
+TARGET = sattrack
 
 
 QT += qml
@@ -36,20 +37,27 @@ RCC_DIR = tmp/rcc
 SOURCES += src/main.cpp \
     src/dbinterface.cpp \
     src/picbuttonlist.cpp \
-    src/imagesource.cpp
+    src/imagesource.cpp \
+#    src/blob-image.cpp \
+#    src/satpicbuf.cpp
+    src/runsattrack.cpp
 
-RESOURCES += qml.qrc
+RESOURCES += sattrack.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH = qml/
 
 # Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
+unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
     src/dbinterface.h \
     src/picbuttonlist.h \
     src/gpl2.h \
-    src/imagesource.h
+    src/imagesource.h \
+    src/berndsutil.h \
+#    src/blob-image.h \
+#    src/satpicbuf.h \
+#    src/sjdatasrc.h
+    src/runsattrack.h

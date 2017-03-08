@@ -64,6 +64,7 @@ int numImages() const
 
 PicButtonList* imageModel() const
 {
+  qDebug() << Q_FUNC_INFO << this << m_thePics;
   return m_thePics;
 }
 
@@ -84,6 +85,7 @@ private:
 
   QDateTime m_date;
   QSqlDatabase m_db;
+  bool         m_haveDB;
 
   PicButtonList *m_thePics;
   QGuiApplication * m_app;

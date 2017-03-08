@@ -30,8 +30,14 @@ ApplicationWindow {
     visible: true
     width: 640
     height: 480
-    DBIf {
+    DBIF {
         id: dbif;
+        objectName: "QMLDbif";
+        Component.onCompleted: {
+            console.log("we have dbif at",dbif);
+            dbif.doConnect();
+            dbif.getImages();
+        }
     }
 
     Rectangle {
@@ -58,10 +64,8 @@ ApplicationWindow {
             }
             width: 200;
             height: 300;
+            source: "qrc:pics/nopic.jpg"
             z: bigRect.z+1;
-            property string filename: "noimg.jpg";
-            property string ident: "0";
-            source: "image://satpics/"+ident+"/"+filename;
         }
 
         ListView {
@@ -86,12 +90,10 @@ ApplicationWindow {
                 }
                 onReleased: {
                     console.log("they want " ,identText.text);
-                    dbif.doRaise(index,ident,picname);
                     theList.visible = false;
                     theImage.visible = true;
-                    theImage.filename = picname;
-                    theImage.ident = ident;
-                    imgLabel.text = ident + "==" + picname;
+                    theImage.source = "image://satpics/" + ident + "/" + picname;
+                    imgLabel.text = theImage.source;
                 }
             }
         }
@@ -134,15 +136,6 @@ ApplicationWindow {
                     console.log("Button Pressed. Entered text: " + exitButton.text);
                     dbif.doQuit();
                     Qt.quit();
-                }
-            }
-            Button {
-                id: runButton;
-                width: exitButton.width;
-                height: exitButton.height;
-                text: "Run";
-                onReleased: {
-                    dbif.getImages();
                 }
             }
 
