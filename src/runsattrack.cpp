@@ -36,16 +36,25 @@ RunSattrack::runMore(QObject *obj,
                          QUrl url)
 {
   qDebug() << Q_FUNC_INFO << obj << url;
-  QQmlContext * ctx = engine.rootContext();
-  qDebug() << Q_FUNC_INFO << "ctx" << ctx;
-  QList<DBInterface*>  dbf = ctx->findChildren<DBInterface*>();
-  qDebug() << Q_FUNC_INFO << "dbf" << dbf;
-  if (!dbf.at(0)) {
+  QObject * root = engine.rootObjects().at(0);
+  qDebug() << Q_FUNC_INFO << "root" << root;
+  QList<QObject*>  dbfCandidates = root->findChildren<QObject*>();
+  qDebug() << Q_FUNC_INFO << "maybe in here? " << dbfCandidates;
+  DBInterface * dbf(nullptr);
+  for (auto p=dbfCandidates.begin(); p != dbfCandidates.end(); ++p) {
+    qDebug() << Q_FUNC_INFO << "obj " << *p;
+    dbf = qobject_cast<DBInterface*>(*p);
+    if (dbf) {
+      break;
+    }
+  }
+  qDebug() << Q_FUNC_INFO << "dbf" << __LINE__  << dbf;
+  if (dbf == nullptr) {
     abort();
   }
-  imgSrc.setButtonDB(dbf.at(0)->imageModel());
-  dbf.at(0)->setApp(*m_app);
-  qDebug() << Q_FUNC_INFO << "image model at " << dbf.at(0)->imageModel();
+  imgSrc.setButtonDB(dbf->imageModel());
+  dbf->setApp(*m_app);
+  qDebug() << Q_FUNC_INFO << "image model at " << dbf->imageModel();
 }
 
 void

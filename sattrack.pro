@@ -40,7 +40,8 @@ SOURCES += src/main.cpp \
     src/imagesource.cpp \
 #    src/blob-image.cpp \
 #    src/satpicbuf.cpp
-    src/runsattrack.cpp
+    src/runsattrack.cpp \
+    src/timerchecker.cpp
 
 RESOURCES += sattrack.qrc
 
@@ -60,4 +61,5 @@ HEADERS += \
 #    src/blob-image.h \
 #    src/satpicbuf.h \
 #    src/sjdatasrc.h
-    src/runsattrack.h
+    src/runsattrack.h \
+    src/timerchecker.h

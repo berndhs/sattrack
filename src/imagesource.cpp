@@ -5,6 +5,7 @@
 #include <QByteArray>
 #include <QImage>
 #include <QString>
+#include <QObject>
 #include <stdlib.h>
 #include "dbinterface.h"
 
@@ -17,6 +18,23 @@ ImageSource::ImageSource(QQmlImageProviderBase::ImageType tipo,
     m_thePics(nullptr)
 {
   qDebug() << Q_FUNC_INFO << tipo << flags;
+  timeCheck.installImageSource(this);
+  timeCheck.go();
+}
+
+void
+ImageSource::checkDB()
+{
+   qDebug() << Q_FUNC_INFO << buttonDB() ;
+   if (buttonDB()) {
+     qDebug() << Q_FUNC_INFO << "\t" << buttonDB()->objectName() ;
+   }
+}
+
+void
+ImageSource::setButtonDB(PicButtonList *buttonDB)
+{
+  m_thePics = buttonDB;
 }
 
 QImage
@@ -48,11 +66,15 @@ ImageSource::requestImage(const QString &id,
     QString cp  = QString("cp %1 pic.jpg").arg(tmp.fileName());
     int ret = system (cp.toStdString().c_str());
     qDebug() << Q_FUNC_INFO << "system says " << ret;
+  } else {
+    qDebug() << "Button DB has dissapeared";
+    return QImage(":pics/nopic.jpg");
   }
-  QImage::Format fmt = QImage::Format_Indexed8;
+  QImage retImg;
   unsigned char * uc = (unsigned char *) img.data();
+  retImg.loadFromData(uc,img.length());
   qDebug() << Q_FUNC_INFO << "data in " << tmp.fileName();
-  return QImage(tmp.fileName());
+  return retImg;
 }
 
 QPixmap

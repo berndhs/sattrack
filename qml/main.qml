@@ -27,25 +27,32 @@ import com.berndhs 1.0
 
 ApplicationWindow {
     id: bigWindow;
+    objectName: "bigWindow";
     visible: true
     width: 640
     height: 480
-    DBIF {
-        id: dbif;
-        objectName: "QMLDbif";
-        Component.onCompleted: {
-            console.log("we have dbif at",dbif);
-            dbif.doConnect();
-            dbif.getImages();
+    Item {
+        id: fakeItem;
+        objectName: "fakeItem";
+        DBIF {
+            id: dbif;
+            objectName: "QMLDbif";
+            Component.onCompleted: {
+                console.log("we have dbif at",dbif);
+                dbif.doConnect();
+                dbif.getImages();
+            }
         }
     }
 
     Rectangle {
         id: bigRect;
         anchors.fill: parent;
+        objectName: "bigRect";
         color: "lightyellow";
         Text {
             id: imgLabel;
+            objectName: "imgLabel";
             width: theImage.width;
             height: 19;
             anchors.left: bigRect.left;
@@ -57,6 +64,7 @@ ApplicationWindow {
 
         Image {
             id: theImage;
+            objectName: "theImage";
             visible: false;
             anchors {
                 left: bigRect.left;
@@ -70,6 +78,7 @@ ApplicationWindow {
 
         ListView {
             id: theList;
+            objectName: "theList";
             visible: true;
             height: bigRect.height;
             width: bigRect.width/2;
@@ -100,6 +109,7 @@ ApplicationWindow {
 
         Page1 {
             id: subPage;
+            objectName: "subPage";
             z: bigRect.z+10;
             anchors {
                 right: bigRect.right;
@@ -123,12 +133,14 @@ ApplicationWindow {
         }
         Row {
             id: bottomRow;
+            objectName: "bottomRow";
             anchors {
                 bottom: bigRect.bottom;
                 horizontalCenter: bigRect.horizontalCenter;
             }
             Button {
                 id: exitButton
+                objectName: "exitButton";
                 width: bigWindow.width/6;
                 height: 40;
                 text: "Done";

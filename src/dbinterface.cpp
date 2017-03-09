@@ -34,10 +34,11 @@ DBInterface::DBInterface(QObject *parent)
   m_haveDB(false),
   m_app(0)
 {
-  qDebug() << Q_FUNC_INFO << "\n\n\n";
+  qDebug() << Q_FUNC_INFO ;
   static int dbcount(0);
   ++dbcount;
   m_thePics = new PicButtonList(this);
+  m_thePics->setObjectName("In DBInterface");
   m_thePics->setDB(this);
   qDebug() << Q_FUNC_INFO << dbcount << m_thePics;
 
