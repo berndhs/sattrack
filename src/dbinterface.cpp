@@ -99,8 +99,8 @@ void DBInterface::doQuit()
   qDebug() << Q_FUNC_INFO ;
 
   doDisConnect();
-//  m_thePics->clear();
-//  m_app->quit();
+  m_thePics->clear();
+  m_app->quit();
 
 }
 
@@ -115,6 +115,35 @@ DBInterface::setDate(const QString &dt)
   m_date = QDateTime::fromString(dt);
   qDebug() << Q_FUNC_INFO << m_date.toString();
   emit dateChanged(m_date);
+}
+
+void
+DBInterface::selectMore(const QChar direction)
+{
+  qDebug() << Q_FUNC_INFO << direction
+           << "\n\t" << m_nextIdent << m_centerIdent;
+  QSqlQuery qry (m_db);
+  QString opnd (direction == '+' ? ">=" : (direction == '-' ? "<=" : "="));
+  QString order (direction == '+' ? "ASC" : (direction == '-' ? "DESC" : "UNORDERED"));
+  QString orderClause (direction == '=' ? "" : QString("order by ident ")+order);
+  QString select =
+      QString("select ident from satpics where picname = '%1' and ident %2 '%3' %4 limit 2;")
+      .arg(m_currentPic)
+      .arg(opnd)
+      .arg(m_centerIdent)
+      .arg(orderClause);
+  bool worked = qry.exec(select);
+  QSqlRecord resultRec = qry.record();
+  qDebug() << Q_FUNC_INFO << select << "\n\t\t" << resultRec;
+  if (resultRec.count() < 2) {
+    // not enough data left, hit edge
+  }
+  int identNdx = resultRec.indexOf("ident");
+  qry.first();
+  qry.next();
+  m_nextIdent = qry.value(identNdx).toString();
+  emit nextIdentChanged(m_nextIdent);
+
 }
 
 QDateTime DBInterface::date()

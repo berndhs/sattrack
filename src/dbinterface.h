@@ -52,20 +52,45 @@ public:
   Q_INVOKABLE void doQuit();
   Q_INVOKABLE void doRaise(const int index, const QString ident,const QString picname);
   Q_PROPERTY(int numImages READ numImages NOTIFY numImagesChanged)
+  Q_PROPERTY(QString nextIdent READ nextIdent NOTIFY nextIdentChanged)
+  Q_PROPERTY(QString currentPic READ currentPic NOTIFY currentPicChanged)
+
+  Q_INVOKABLE void doCenter (const QString ident, const QString picname)
+  {
+    m_centerIdent = ident;
+    m_currentPic = picname;
+  }
+  Q_INVOKABLE void goForward () { selectMore('+'); }
+  Q_INVOKABLE void goBack () { selectMore('-'); }
 
   Q_PROPERTY(PicButtonList* imageModel READ imageModel NOTIFY imageModelChanged)
 
-QDateTime date();
+QDateTime
+date();
 
-int numImages() const
+int
+numImages() const
 {
   return m_thePics->rowCount();
 }
 
-PicButtonList* imageModel() const
+PicButtonList*
+imageModel() const
 {
   qDebug() << Q_FUNC_INFO << this << m_thePics;
   return m_thePics;
+}
+
+QString
+nextIdent() const
+{
+  return m_nextIdent;
+}
+
+QString
+currentPic() const
+{
+  return m_currentPic;
 }
 
 public slots:
@@ -75,13 +100,19 @@ public slots:
 
 signals:
 
-void dateChanged(QDateTime date);
+  void dateChanged(QDateTime date);
 
-void numImagesChanged(int numImages);
+  void numImagesChanged(int numImages);
 
-void imageModelChanged(PicButtonList* imageModel);
+  void imageModelChanged(PicButtonList* imageModel);
+
+  void nextIdentChanged(QString nextIdent);
+
+  void currentPicChanged(QString currentPic);
 
 private:
+
+  void selectMore (const QChar direction);
 
   QDateTime m_date;
   QSqlDatabase m_db;
@@ -89,6 +120,10 @@ private:
 
   PicButtonList *m_thePics;
   QGuiApplication * m_app;
+
+  QString    m_centerIdent;
+  QString    m_currentPic;
+  QString    m_nextIdent;
 };
 
 } // namespace

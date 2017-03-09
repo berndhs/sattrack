@@ -7,7 +7,7 @@ TimerChecker::TimerChecker(QObject *parent) : QObject(parent)
 {
   m_checkTimer = new QTimer(this);
   connect (m_checkTimer,SIGNAL(timeout()),this,SLOT(checkDB()));
-  m_checkTimer->setInterval(1000);
+  m_checkTimer->setInterval(30000);
 
 }
 
@@ -15,6 +15,7 @@ void
 TimerChecker::go()
 {
    if (!m_checkTimer->isActive()) {
+     checkDB();
      m_checkTimer->start();
    }
 }

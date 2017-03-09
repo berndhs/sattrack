@@ -51,29 +51,21 @@ ImageSource::requestImage(const QString &id,
     buttonDB()->db()->getImages();
   }
   QFileInfo info(id);
-  QTemporaryFile tmp (QString("tmppicXXXXXX.jpg"));
-  tmp.open();
 
   QByteArray img;
   qDebug() << Q_FUNC_INFO << "m_thePics " << m_thePics
            << "\n\t\tlook for" << info.path() << info.fileName();
   if (buttonDB()) {
     img = buttonDB()->buttonImage(info.path(),info.fileName());
-    qDebug() << Q_FUNC_INFO << "images has" << img.size() << "bytes";
-    int n = tmp.write(img.data(),img.size());
-    tmp.close();
-    qDebug() << Q_FUNC_INFO << "wrote " << n << "bytes";
-    QString cp  = QString("cp %1 pic.jpg").arg(tmp.fileName());
-    int ret = system (cp.toStdString().c_str());
-    qDebug() << Q_FUNC_INFO << "system says " << ret;
   } else {
-    qDebug() << "Button DB has dissapeared";
     return QImage(":pics/nopic.jpg");
   }
   QImage retImg;
-  unsigned char * uc = (unsigned char *) img.data();
+  if (img.length() < 1) {
+    return  QImage(":pics/nopic.jpg");
+  }
+  unsigned char * uc = (unsigned char *) (img.data());
   retImg.loadFromData(uc,img.length());
-  qDebug() << Q_FUNC_INFO << "data in " << tmp.fileName();
   return retImg;
 }
 
