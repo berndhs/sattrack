@@ -55,12 +55,96 @@ ApplicationWindow {
             objectName: "imgLabel";
             width: theImage.width;
             height: 19;
-            anchors.left: bigRect.left;
+            anchors.left: topRow.right;
             anchors.top: bigRect.top;
             z: bigRect.z+2;
             font.pixelSize: 15;
-            text: "?";
+            text: theImage.visible ? theImage.source : "no image";
         }
+        Row {
+            id: topRow;
+            objectName: "topRow";
+            opacity: 0.8;
+            anchors {
+                top: bigRect.top;
+                left: bigRect.left;
+            }
+            height: imgLabel.height;
+            z: theImage.z+1;
+            Button {
+                id: exitButton
+                objectName: "exitButton";
+                width: bigWindow.width/6;
+                height: 40;
+                text: "Done";
+                font.family: "DejaVu Serif";
+                onReleased: {
+                    console.log("Button Pressed. Entered text: " + exitButton.text);
+                    dbif.doQuit();
+                }
+                background: Rectangle {
+                    radius: height/2;
+                    color: "lightyellow";
+                    border.width: 2;
+                    border.color: "yellow";
+                }
+            }
+
+        }
+
+        Column {
+            id: leftButtons;
+            visible: theImage.visible;
+            anchors {
+                left: bigRect.left;
+                top: imgLabel.bottom;
+                topMargin: 20;
+            }
+            z: theImage.z+1;
+            Button {
+                id: backButton;
+                height: font.pixelSize*2;
+                width: 40;
+                opacity: 0.6;
+                text: "<";
+                font.bold: true;
+                onReleased: {
+                    console.log("Back Button");
+                    dbif.goBack();
+                    theImage.source = "image://satpics/" + dbif.nextIdent + "/" + dbif.currentPic;
+                }
+                background: Rectangle {
+                    implicitWidth: 100
+                    implicitHeight: 40
+                    color: button.down ? "#d6d6d6" : "#f6f6f6"
+                    border.color: "#26287a"
+                    border.width: 3
+                    radius: 4
+                }
+            }
+            Button {
+                id: fwdButton;
+                height: font.pixelSize*2;
+                width: 40;
+                opacity: 0.6;
+                text: ">";
+                font.bold: true;
+                onReleased: {
+                    console.log("Forward Button");
+                    dbif.goForward();
+                    theImage.source = "image://satpics/" +  dbif.nextIdent + "/" + dbif.currentPic;
+                }
+                background: Rectangle {
+                    implicitWidth: 100
+                    implicitHeight: 40
+                    color: button.down ? "#d6d6d6" : "#f6f6f6"
+                    border.color: "#26287a"
+                    border.width: 3
+                    radius: 4
+                }
+            }
+        }
+
 
         Image {
             id: theImage;
@@ -68,10 +152,10 @@ ApplicationWindow {
             visible: false;
             anchors {
                 left: bigRect.left;
-                verticalCenter: bigRect.verticalCenter;
+                top: imgLabel.bottom;
             }
-            width: 200;
-            height: 300;
+            width: bigRect.width;
+            height: bigRect.height - imgLabel.height;
             source: "qrc:pics/nopic.jpg"
             z: bigRect.z+1;
         }
@@ -83,14 +167,13 @@ ApplicationWindow {
             height: bigRect.height;
             width: bigRect.width/2;
             z: bigRect.z+1;
-            anchors {
-                left: bigRect.left;
-                verticalCenter: bigRect.verticalCenter;
-            }
+            anchors.left: bigRect.left;
+            anchors.top:  bigRect.top;
+            anchors.topMargin: 100;
             model: dbif.imageModel;
             delegate: Button {
                 id: listItem;
-                width: 200;
+                width: identText.width + 50;
                 height: 20;
                 Text {
                     id: identText;
@@ -102,55 +185,34 @@ ApplicationWindow {
                     theList.visible = false;
                     theImage.visible = true;
                     theImage.source = "image://satpics/" + ident + "/" + picname;
-                    imgLabel.text = theImage.source;
+                    dbif.doCenter(ident,picname);
                 }
             }
         }
 
-        Page1 {
-            id: subPage;
-            objectName: "subPage";
-            z: bigRect.z+10;
-            anchors {
-                right: bigRect.right;
-                verticalCenter: bigRect.verticalCenter;
-            }
+//        Page1 {
+//            id: subPage;
+//            objectName: "subPage";
+//            z: bigRect.z+10;
+//            anchors {
+//                right: bigRect.right;
+//                verticalCenter: bigRect.verticalCenter;
+//            }
 
-            outsidedate: dbif.date;
-            numImages: dbif.numImages;
-            Timer {
-                id: getDate;
-                interval: 200;
-                repeat: true;
-                running: true;
-                onTriggered: {
-                    subPage.outsidedate = dbif.date;
-                }
-            }
-        }
+//            outsidedate: dbif.date;
+//            numImages: dbif.numImages;
+//            Timer {
+//                id: getDate;
+//                interval: 200;
+//                repeat: true;
+//                running: true;
+//                onTriggered: {
+//                    subPage.outsidedate = dbif.date;
+//                }
+//            }
+//        }
         Component.onCompleted: {
             dbif.doConnect();
-        }
-        Row {
-            id: bottomRow;
-            objectName: "bottomRow";
-            anchors {
-                bottom: bigRect.bottom;
-                horizontalCenter: bigRect.horizontalCenter;
-            }
-            Button {
-                id: exitButton
-                objectName: "exitButton";
-                width: bigWindow.width/6;
-                height: 40;
-                text: "Done";
-                onReleased: {
-                    console.log("Button Pressed. Entered text: " + exitButton.text);
-                    dbif.doQuit();
-                    Qt.quit();
-                }
-            }
-
         }
     }
 
