@@ -44,11 +44,11 @@ ImageSource::requestImage(const QString &id,
 {
   if (buttonDB() == nullptr) {
     qDebug() << Q_FUNC_INFO << "not present";
-    return QImage(":pics/nopic.jpg");
+    return QImage(nopic());
   }
   if (buttonDB()->size() < 1) {
     buttonDB()->db()->doConnect();
-    buttonDB()->db()->getImages();
+    buttonDB()->db()->getImages(10);
   }
   QFileInfo info(id);
 
@@ -58,11 +58,11 @@ ImageSource::requestImage(const QString &id,
   if (buttonDB()) {
     img = buttonDB()->buttonImage(info.path(),info.fileName());
   } else {
-    return QImage(":pics/nopic.jpg");
+    return QImage(nopic());
   }
   QImage retImg;
   if (img.length() < 1) {
-    return  QImage(":pics/nopic.jpg");
+    return QImage(nopic());
   }
   unsigned char * uc = (unsigned char *) (img.data());
   retImg.loadFromData(uc,img.length());
@@ -86,6 +86,12 @@ ImageSource::requestTexture(const QString &id,
 {
   qDebug() << Q_FUNC_INFO;
   return nullptr;
+}
+
+QString
+ImageSource::nopic()
+{
+  return QString (":pics/nopic.jpg");
 }
 
 } // namespace

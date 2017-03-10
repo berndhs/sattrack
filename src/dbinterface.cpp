@@ -3,6 +3,7 @@
 #include <QSqlQuery>
 #include <QSqlResult>
 #include <QSqlRecord>
+#include "imagesource.h"
 
 /****************************************************************
  * This file is distributed under the following license:
@@ -44,7 +45,9 @@ DBInterface::DBInterface(QObject *parent)
 
 }
 
-bool DBInterface::doConnect()
+
+bool
+DBInterface::doConnect()
 {
   qDebug() << Q_FUNC_INFO;
   m_db = QSqlDatabase::addDatabase("QMYSQL");
@@ -59,11 +62,12 @@ bool DBInterface::doConnect()
   return worked;
 }
 
-void DBInterface::getImages()
+void
+DBInterface::getImages(int ni)
 {
   qDebug() << Q_FUNC_INFO;
   QSqlQuery qry(m_db);
-  QString select ("select * from satpics order by ident DESC limit 10;");
+  QString select (QString("select * from satpics order by ident DESC limit %1;").arg(ni));
   bool worked = qry.exec(select);
   qDebug() << Q_FUNC_INFO << worked << qry.size();
 
@@ -94,19 +98,30 @@ DBInterface::doDisConnect()
   m_db.close();
 }
 
-void DBInterface::doQuit()
+void
+DBInterface::doQuit()
 {
   qDebug() << Q_FUNC_INFO ;
 
-  doDisConnect();
   m_thePics->clear();
+  doDisConnect();
   m_app->quit();
 
 }
 
-void DBInterface::doRaise(const int index, const QString ident, const QString picname)
+void
+DBInterface::doRaise(const int index, const QString ident, const QString picname)
 {
-  qDebug() << Q_FUNC_INFO << index << ident << picname;
+  qDebug() << Q_FUNC_INFO << "Not Supposed to Be Here! \n\t\t" << index << ident << picname;
+  abort() ;
+}
+
+void
+DBInterface::doCenter(const QString ident, const QString picname, const QString stamp)
+{
+  m_centerIdent = ident;
+  m_currentPic = picname;
+  m_currentStamp = stamp;
 }
 
 void
@@ -117,36 +132,75 @@ DBInterface::setDate(const QString &dt)
   emit dateChanged(m_date);
 }
 
+
+bool
+DBInterface::compare(const QString s1, const QChar compare, const QString s2)
+{
+  bool result(false);
+  int is1 = s1.toInt();
+  int is2 = s2.toInt();
+  qDebug() << Q_FUNC_INFO << is1 << compare << is2;
+  if (compare == '<') {
+    result = is1 < is2;
+  } else if (compare == '>') {
+    result = is1 > is2;
+  }
+  qDebug() << Q_FUNC_INFO << result;
+  return result;
+}
+
 void
 DBInterface::selectMore(const QChar direction)
 {
   qDebug() << Q_FUNC_INFO << direction
            << "\n\t" << m_nextIdent << m_centerIdent;
+//  m_thePics->clear();
+  QString nextPic(ImageSource::nopic());
+  QString nextStamp("not in this epoch");
   QSqlQuery qry (m_db);
-  QString opnd (direction == '+' ? ">=" : (direction == '-' ? "<=" : "="));
-  QString order (direction == '+' ? "ASC" : (direction == '-' ? "DESC" : "UNORDERED"));
-  QString orderClause (direction == '=' ? "" : QString("order by ident ")+order);
+  bool up = (direction == '+');
+  QChar opnd (up ? '>' : '<');
+  QString direct (up ? "ASC" : "DESC" );
+  QString orderClause (QString("order by ident ")+direct);
   QString select =
-      QString("select ident from satpics where picname = '%1' and ident %2 '%3' %4 limit 2;")
+      QString("select * from satpics where picname = '%1' and ident %2 %3 %4 limit 10;")
       .arg(m_currentPic)
       .arg(opnd)
       .arg(m_centerIdent)
       .arg(orderClause);
   bool worked = qry.exec(select);
   QSqlRecord resultRec = qry.record();
-  qDebug() << Q_FUNC_INFO << select << "\n\t\t" << resultRec;
-  if (resultRec.count() < 2) {
-    // not enough data left, hit edge
-  }
   int identNdx = resultRec.indexOf("ident");
-  qry.first();
-  qry.next();
-  m_nextIdent = qry.value(identNdx).toString();
-  emit nextIdentChanged(m_nextIdent);
+  int picnameNdx = resultRec.indexOf("picname");
+  int remarkNdx = resultRec.indexOf("remark");
+  int imageNdx = resultRec.indexOf("image");
+  int stampNdx = resultRec.indexOf("stamp");
+  bool gotStart = (up?qry.last() : qry.first());
+  qDebug() << Q_FUNC_INFO << "+++++++++++" << qry.size() << "results";
+  while ( (up ? qry.previous() : qry.next()) ) {
+    if (compare (qry.value(identNdx).toString(),opnd, m_centerIdent))  {// still ok
+      m_nextIdent = qry.value(identNdx).toString();
+      m_currentRemark = qry.value(remarkNdx).toString();
+      nextStamp = qry.value(stampNdx).toString();
+      nextPic = qry.value(picnameNdx).toString();
+      qDebug() << qry.value(identNdx).toString() << "\t\tYes";
+    } else {
+      qDebug() << qry.value(identNdx).toString() << "\t\tNo";
+    }
 
+    m_thePics->addItem(qry.value(identNdx).toString(),
+                       qry.value(picnameNdx).toString(),
+                       qry.value(remarkNdx).toString(),
+                       qry.value(stampNdx).toString(),
+                       qry.value(imageNdx).toByteArray());
+  }
+  emit nextIdentChanged(m_nextIdent);
+  doCenter(m_nextIdent,nextPic,nextStamp); // last one we accepted
+    m_thePics->dump();
 }
 
-QDateTime DBInterface::date()
+QDateTime
+DBInterface::date()
 {
   m_date = QDateTime::currentDateTime();
 

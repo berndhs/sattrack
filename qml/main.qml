@@ -40,7 +40,7 @@ ApplicationWindow {
             Component.onCompleted: {
                 console.log("we have dbif at",dbif);
                 dbif.doConnect();
-                dbif.getImages();
+                dbif.getImages(15);
             }
         }
     }
@@ -49,17 +49,18 @@ ApplicationWindow {
         id: bigRect;
         anchors.fill: parent;
         objectName: "bigRect";
-        color: "lightyellow";
+//        color: "lightyellow";
         Text {
             id: imgLabel;
             objectName: "imgLabel";
             width: theImage.width;
-            height: 19;
+            height: 40;
             anchors.left: topRow.right;
             anchors.top: bigRect.top;
             z: bigRect.z+2;
             font.pixelSize: 15;
-            text: theImage.visible ? theImage.source : "no image";
+            text: (theImage.visible ? theImage.source : "no image")
+                + "\n" + dbif.currentRemark + "\t" + dbif.currentStamp;
         }
         Row {
             id: topRow;
@@ -116,7 +117,7 @@ ApplicationWindow {
                 background: Rectangle {
                     implicitWidth: 100
                     implicitHeight: 40
-                    color: button.down ? "#d6d6d6" : "#f6f6f6"
+                    color: backButton.down ? "#d6d6d6" : "#f6f6f6"
                     border.color: "#26287a"
                     border.width: 3
                     radius: 4
@@ -137,7 +138,7 @@ ApplicationWindow {
                 background: Rectangle {
                     implicitWidth: 100
                     implicitHeight: 40
-                    color: button.down ? "#d6d6d6" : "#f6f6f6"
+                    color: fwdButton.down ? "#d6d6d6" : "#f6f6f6"
                     border.color: "#26287a"
                     border.width: 3
                     radius: 4
@@ -157,6 +158,7 @@ ApplicationWindow {
             width: bigRect.width;
             height: bigRect.height - imgLabel.height;
             source: "qrc:pics/nopic.jpg"
+            property string remark: "don't know";
             z: bigRect.z+1;
         }
 
@@ -166,7 +168,7 @@ ApplicationWindow {
             visible: true;
             height: bigRect.height;
             width: bigRect.width/2;
-            z: bigRect.z+1;
+            z: theImage.z+1;
             anchors.left: bigRect.left;
             anchors.top:  bigRect.top;
             anchors.topMargin: 100;
@@ -185,7 +187,7 @@ ApplicationWindow {
                     theList.visible = false;
                     theImage.visible = true;
                     theImage.source = "image://satpics/" + ident + "/" + picname;
-                    dbif.doCenter(ident,picname);
+                    dbif.doCenter(ident,picname,stamp);
                 }
             }
         }

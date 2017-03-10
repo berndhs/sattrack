@@ -48,6 +48,8 @@ public:
                                                QSize * size,
                                                const QSize & requestedSize);
 
+  static QString nopic();
+
   PicButtonList* buttonDB() const
   {
     return m_thePics;

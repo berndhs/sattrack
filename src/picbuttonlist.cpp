@@ -37,7 +37,8 @@ PicButtonList::PicButtonList (QObject *parent)
   checkTimer = new QTimer(this);
   checkTimer->setInterval(3000);
   connect(checkTimer,SIGNAL(timeout()),this,SLOT(dumpKeys()));
-  checkTimer->start(3000);
+  checkTimer->start(30000);
+  dumpKeys();
 
 }
 
@@ -45,7 +46,7 @@ void
 PicButtonList::dumpKeys()
 {
   return;
-  qDebug() << Q_FUNC_INFO << "I am " << this << "\n\t\tkeys " << m_dataKey;
+  qDebug() << Q_FUNC_INFO << "I am " << this << "\n\t\tkeys are " << m_dataKey;
 }
 
 int
@@ -133,11 +134,11 @@ PicButtonList::clear()
   qDebug() << Q_FUNC_INFO;
   beginResetModel();
   m_dataKey.clear();
-  for (auto d=m_dataMap.begin(); d !=m_dataMap.end(); ++d) {
-    Image *im = d.value();
-    delete im;
-    m_dataMap.erase(d);
-  }
+//  for (auto d=m_dataMap.begin(); d !=m_dataMap.end(); ++d) {
+//    Image *im = d.value();
+//    delete im;
+//    m_dataMap.erase(d);
+//  }
   m_dataMap.clear();
   endResetModel();
 }
@@ -171,6 +172,15 @@ PicButtonList::addItem(const QString &ident,
   m_dataMap[key] = im;
   endResetModel();
   return true;
+}
+
+void PicButtonList::dump()
+{
+  qDebug() << Q_FUNC_INFO ;
+  dumpKeys();
+  for (auto k=m_dataMap.begin(); k!=m_dataMap.end(); ++k) {
+    qDebug() << "\t" << k.key() << k.value()->dump();
+  }
 }
 
 QString

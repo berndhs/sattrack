@@ -29,6 +29,7 @@
 #include <QObject>
 #include <QAbstractItemModel>
 #include <QString>
+#include <QStringList>
 #include <QVariant>
 #include <QByteArray>
 #include <QMap>
@@ -84,6 +85,8 @@ public:
     return m_dbConnected;
   }
 
+  void dump();
+
 public slots:
 
   void dumpKeys();
@@ -116,6 +119,16 @@ private:
         image(QByteArray())
     {}
     void setImage(const QByteArray & bytes) { image = bytes; }
+    QStringList dump()
+    {
+      QStringList res;
+      res << ident;
+      res << picname;
+      res << remark;
+      res << stamp;
+      return res;
+    }
+
     QString ident;
     QString picname;
     QString remark;

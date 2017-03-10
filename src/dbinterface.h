@@ -47,19 +47,17 @@ public:
 
   Q_PROPERTY(QDateTime date READ date NOTIFY dateChanged)
   Q_INVOKABLE bool doConnect ();
-  Q_INVOKABLE void getImages();
+  Q_INVOKABLE void getImages(int ni);
   Q_INVOKABLE void doDisConnect();
   Q_INVOKABLE void doQuit();
   Q_INVOKABLE void doRaise(const int index, const QString ident,const QString picname);
   Q_PROPERTY(int numImages READ numImages NOTIFY numImagesChanged)
   Q_PROPERTY(QString nextIdent READ nextIdent NOTIFY nextIdentChanged)
   Q_PROPERTY(QString currentPic READ currentPic NOTIFY currentPicChanged)
+  Q_PROPERTY(QString  currentRemark READ currentRemark NOTIFY currentRemarkChanged)
+  Q_PROPERTY(QString  currentStamp READ currentStamp NOTIFY currentStampChanged)
 
-  Q_INVOKABLE void doCenter (const QString ident, const QString picname)
-  {
-    m_centerIdent = ident;
-    m_currentPic = picname;
-  }
+  Q_INVOKABLE void doCenter (const QString ident, const QString picname, const QString stamp);
   Q_INVOKABLE void goForward () { selectMore('+'); }
   Q_INVOKABLE void goBack () { selectMore('-'); }
 
@@ -93,6 +91,18 @@ currentPic() const
   return m_currentPic;
 }
 
+QString
+currentRemark() const
+{
+  return m_currentRemark;
+}
+
+QString
+currentStamp() const
+{
+  return m_currentStamp;
+}
+
 public slots:
 
   void setDate (const QString & dt);
@@ -110,9 +120,14 @@ signals:
 
   void currentPicChanged(QString currentPic);
 
+  void currentRemarkChanged(QString currentRemark);
+
+  void currentStampChanged(QString currentStamp);
+
 private:
 
   void selectMore (const QChar direction);
+  bool compare (const QString s1, const QChar compare, const QString s2);
 
   QDateTime m_date;
   QSqlDatabase m_db;
@@ -124,6 +139,8 @@ private:
   QString    m_centerIdent;
   QString    m_currentPic;
   QString    m_nextIdent;
+  QString m_currentRemark;
+  QString m_currentStamp;
 };
 
 } // namespace
