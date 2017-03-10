@@ -29,6 +29,8 @@
 #include <QObject>
 #include <QDateTime>
 #include <QString>
+#include <QStringList>
+#include <QQueue>
 #include <QSqlDatabase>
 #include <QDateTime>
 #include <QGuiApplication>
@@ -53,6 +55,7 @@ public:
   Q_INVOKABLE void doRaise(const int index, const QString ident,const QString picname);
   Q_PROPERTY(int numImages READ numImages NOTIFY numImagesChanged)
   Q_PROPERTY(QString nextIdent READ nextIdent NOTIFY nextIdentChanged)
+  Q_PROPERTY(QString centerIdent READ centerIdent NOTIFY centerIdentChanged)
   Q_PROPERTY(QString currentPic READ currentPic NOTIFY currentPicChanged)
   Q_PROPERTY(QString  currentRemark READ currentRemark NOTIFY currentRemarkChanged)
   Q_PROPERTY(QString  currentStamp READ currentStamp NOTIFY currentStampChanged)
@@ -103,6 +106,12 @@ currentStamp() const
   return m_currentStamp;
 }
 
+QString
+centerIdent() const
+{
+  return m_centerIdent;
+}
+
 public slots:
 
   void setDate (const QString & dt);
@@ -124,7 +133,33 @@ signals:
 
   void currentStampChanged(QString currentStamp);
 
+  void centerIdentChanged(QString centerIdent);
+
 private:
+
+  class Rec {
+  public:
+    QString id;
+    QString pic;
+    QString rem;
+    QString stmp;
+    Rec(QString i, QString p, QString r, QString s)
+      :id(i),pic(p),rem(r),stmp(s){}
+//    operator QStringList() const
+//    {
+//      QStringList sl;
+//      sl << id << pic << rem << stmp;
+//      return sl;
+//    }
+    operator QString() const
+    {
+      return QString("(\"%1\",\"%2\",\"%3\",\"%4\")").arg(id).arg(pic).arg(rem).arg(stmp);
+    }
+  };
+
+  typedef QQueue<Rec> recQ ;
+
+  recQ isort (const recQ & orig, const bool &up);
 
   void selectMore (const QChar direction);
   bool compare (const QString s1, const QChar compare, const QString s2);

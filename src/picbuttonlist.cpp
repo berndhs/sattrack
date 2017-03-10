@@ -37,7 +37,7 @@ PicButtonList::PicButtonList (QObject *parent)
   checkTimer = new QTimer(this);
   checkTimer->setInterval(3000);
   connect(checkTimer,SIGNAL(timeout()),this,SLOT(dumpKeys()));
-  checkTimer->start(30000);
+//  checkTimer->start(30000);
   dumpKeys();
 
 }
@@ -172,6 +172,15 @@ PicButtonList::addItem(const QString &ident,
   m_dataMap[key] = im;
   endResetModel();
   return true;
+}
+
+bool PicButtonList::haveKey(const QString &ident, const QString &picname)
+{
+  QString key = composeKey(ident,picname);
+  if (m_dataMap.contains(key)) {
+    return true;
+  }
+  return false;
 }
 
 void PicButtonList::dump()

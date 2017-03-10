@@ -112,7 +112,7 @@ ApplicationWindow {
                 onReleased: {
                     console.log("Back Button");
                     dbif.goBack();
-                    theImage.source = "image://satpics/" + dbif.nextIdent + "/" + dbif.currentPic;
+                    theImage.source = "image://satpics/" + dbif.centerIdent + "/" + dbif.currentPic;
                 }
                 background: Rectangle {
                     implicitWidth: 100

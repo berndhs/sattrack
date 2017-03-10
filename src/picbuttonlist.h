@@ -69,6 +69,7 @@ public:
   bool addItem (const QString &ident, const QString &picname,
                 const QString &remark, const QString &stamp,
                 const QByteArray & image);
+  bool haveKey (const QString &ident, const QString &picname);
 
   enum class PicRole {
     R_TooSmall = Qt::UserRole,
